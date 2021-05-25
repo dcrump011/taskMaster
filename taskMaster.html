@@ -1,0 +1,159 @@
+
+<html>
+<link rel="stylesheet" type="text/css" href="Loginc.css">
+<link rel="icon" href="Files/favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body {
+      position: relative; 
+  }
+  
+  .componentDiv{
+      width: 35%;
+      margin: 5px;
+  }
+  
+  .recordDiv{
+      margin-top: 5px;
+      border: 1px solid black;
+  }
+  
+  
+  
+
+</style>
+
+<meta charset="UTF-8">
+  <title>Home</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--Boostrap/Other Scripts-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!--React Scripts-->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+</head>
+<body data-spy="scroll" data-target=".navbar" data-offset="50">
+
+<!--Navigation Bar.-->
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">  
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" href="#section1">taskMaster</a>
+    </li>
+  </ul>
+</nav>
+
+
+<div data-spy="scroll" data-target=".navbar" data-offset="50"></div>
+<div id="section1" class="jumbotron" style="Height: 100%;">
+    
+<div id="formDisplay" class="componentDiv" style="margin-left: 35%; margin-top: 15px; margin-bottom: 20px;"></div>
+
+<div id="testDisplay" class="componentDiv" style="margin-left: 35%; margin-top: 15px; margin-bottom: 20px;"></div>
+
+    
+<script type="text/babel">
+
+const e = React.createElement;
+
+class TextAndButtonFields extends React.Component{
+    constructor(props){
+        super(props);
+    }
+    
+    render(){
+        return(
+            <div>
+                <input type="text" placeholder="Input..." onChange={this.props.onTextBoxChange} value={this.props.textValue}></input>
+                <button className="btn btn-secondary" onClick={this.props.onButtonClick}>Click</button>
+            </div>
+            
+            );
+    }
+}
+
+class ListRecord extends React.Component{
+    constructor(props){
+        super(props);
+        
+    }
+    
+    render(){
+        return(
+            <div className="recordDiv">
+                <li>{this.props.textValue} at {this.props.index}</li>
+                <button className="btn btn-primary btn-danger btn-sm">Remove</button>
+            </div>
+            );
+    }
+    
+}
+
+class Form extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={
+            list: [],
+            textValue: ""
+        };
+        this.onButtonClick=this.onButtonClick.bind(this);
+        this.onTextBoxChange=this.onTextBoxChange.bind(this);
+    }
+    
+    onButtonClick(event){
+        if(this.state.textValue.length>1)
+        {
+            this.setState({
+                list: this.state.list.concat([this.state.textValue])
+            });
+        }
+        
+    }
+    
+    onTextBoxChange(event){
+        this.setState({
+            textValue: event.target.value
+        });
+    }
+    
+    render(){
+        return(
+            <div>
+                <TextAndButtonFields onButtonClick={this.onButtonClick} onTextBoxChange={this.onTextBoxChange} textValue={this.state.textValue} />
+                
+                <ul>
+                    {this.state.list.map((listItem, index) => (
+                        <ListRecord textValue={listItem} index={index} />
+                        )
+                    )}
+                </ul>
+            </div>
+            
+            );
+    }
+}
+ReactDOM.render(<Form />, document.getElementById("formDisplay"));
+
+
+
+
+</script>
+</div>
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
