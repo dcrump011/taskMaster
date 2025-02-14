@@ -1,4 +1,3 @@
-
 <html>
 <link rel="stylesheet" type="text/css" href="Loginc.css">
 <link rel="icon" href="Files/favicon.ico">
@@ -18,16 +17,23 @@
   
   .recordDiv{
       margin-top: 5px;
-      border: 1px solid black;
   }
-  
-  
-  
 
+  #removeButton{
+    margin-left: 20px;
+  }
+
+  #addButton{
+    margin-left: 10px;
+  }
+
+  #inputDiv{
+    margin-bottom: 20px;
+  }
 </style>
 
 <meta charset="UTF-8">
-  <title>Home1</title>
+  <title>Home</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--Boostrap/Other Scripts-->
@@ -47,20 +53,15 @@
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">  
   <ul class="navbar-nav">
     <li class="nav-item">
-      <a class="nav-link" href="#section1">taskMaster1</a>
+      <a class="nav-link" href="#section1"><b>taskMaster</b> - <i>Add/remove tasks in a list.</i></a>
     </li>
   </ul>
 </nav>
 
-
 <div data-spy="scroll" data-target=".navbar" data-offset="50"></div>
 <div id="section1" class="jumbotron" style="Height: 100%;">
-    
 <div id="formDisplay" class="componentDiv" style="margin-left: 35%; margin-top: 15px; margin-bottom: 20px;"></div>
-
 <div id="testDisplay" class="componentDiv" style="margin-left: 35%; margin-top: 15px; margin-bottom: 20px;"></div>
-
-    
 <script type="text/babel">
 
 const e = React.createElement;
@@ -72,11 +73,10 @@ class TextAndButtonFields extends React.Component{
     
     render(){
         return(
-            <div>
-                <input type="text" placeholder="Input..." onChange={this.props.onTextBoxChange} value={this.props.textValue}></input>
-                <button className="btn btn-secondary" onClick={this.props.onButtonClick}>Click</button>
+            <div id="inputDiv">
+                <input type="text" placeholder="Input task..." onChange={this.props.onTextBoxChange} value={this.props.textValue}></input>
+                <button className="btn btn-secondary" id="addButton" onClick={this.props.onButtonClick}>Add</button>
             </div>
-            
             );
     }
 }
@@ -84,39 +84,46 @@ class TextAndButtonFields extends React.Component{
 class ListRecord extends React.Component{
     constructor(props){
         super(props);
-        
     }
+
+    //If we wanted to use 'function()' instead of '() => {}', we'd need this in the constructor above: this.handleClick=this.handleClick.bind(this);.
+    handleClick = () => {
+        this.props.onRemoveClick(this.props.textValue); 
+  };
     
     render(){
         return(
             <div className="recordDiv">
-                <li>{this.props.textValue} at {this.props.index}</li>
-                <button className="btn btn-primary btn-danger btn-sm">Remove</button>
+                <li>
+                    {this.props.textValue}
+                    <button className="btn btn-primary btn-danger btn-sm" id="removeButton" onClick={this.handleClick}>Remove</button>
+                </li>
+                
             </div>
             );
     }
-    
 }
 
 class Form extends React.Component{
     constructor(props){
         super(props);
         this.state={
-            list: [],
+            list: ["Raise the top-sail.", "Scrub the poopdeck.", "Empty the bilge pump."], 
             textValue: ""
         };
         this.onButtonClick=this.onButtonClick.bind(this);
         this.onTextBoxChange=this.onTextBoxChange.bind(this);
+        this.onRemoveClick=this.onRemoveClick.bind(this);
     }
     
     onButtonClick(event){
-        if(this.state.textValue.length>1)
+        if(this.state.textValue.length>0)
         {
             this.setState({
-                list: this.state.list.concat([this.state.textValue])
+                list: this.state.list.concat([this.state.textValue]),
+                textValue: ""
             });
         }
-        
     }
     
     onTextBoxChange(event){
@@ -124,38 +131,41 @@ class Form extends React.Component{
             textValue: event.target.value
         });
     }
+
+    onRemoveClick(textValue){
+        //Remove the record from the list if it matches the id of the clicked record.
+        const updatedArr = this.state.list.filter((recordVal) => recordVal != textValue);  
+
+        this.setState({
+            list: updatedArr
+        })
+    }
     
     render(){
         return(
             <div>
                 <TextAndButtonFields onButtonClick={this.onButtonClick} onTextBoxChange={this.onTextBoxChange} textValue={this.state.textValue} />
-                
                 <ul>
-                    {this.state.list.map((listItem, index) => (
-                        <ListRecord textValue={listItem} index={index} />
+                    {
+                        this.state.list.map((listItem, index) => (
+                        <ListRecord textValue={listItem} index={index} onRemoveClick={this.onRemoveClick} />
                         )
-                    )}
+                    )
+                }
                 </ul>
             </div>
-            
             );
     }
 }
 ReactDOM.render(<Form />, document.getElementById("formDisplay"));
 
 
-
-
 </script>
 </div>
 
 
-
-
-
 </body>
 </html>
-
 
 
 
