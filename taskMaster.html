@@ -19,6 +19,10 @@
       margin-top: 5px;
   }
 
+  #completeButton{
+    margin-left: 15px;
+  }
+
   #removeButton{
     margin-left: 20px;
   }
@@ -86,17 +90,23 @@ class ListRecord extends React.Component{
         super(props);
     }
 
-    //If we wanted to use 'function()' instead of '() => {}', we'd need this in the constructor above: this.handleClick=this.handleClick.bind(this);.
+    //If we wanted to use 'function()' instead of '() => {}', we'd need this in the constructor above: this.handleClick=this.handleClick.bind(this);
     handleClick = () => {
-        this.props.onRemoveClick(this.props.textValue); 
+        this.props.onRemoveClick(this.props.textValue, this.props.listItem); 
   };
+
+    completeClick = () => {
+        this.props.onCompleteClick(this.props.textValue);
+    }
     
     render(){
         return(
             <div className="recordDiv">
                 <li>
-                    {this.props.textValue}
-                    <button className="btn btn-primary btn-danger btn-sm" id="removeButton" onClick={this.handleClick}>Remove</button>
+                    {this.props.listItem.complete ? <s>{this.props.textValue}</s> : this.props.textValue}
+                    <button className="btn btn-primary btn-sm" id="completeButton" onClick={this.completeClick}>Mark</button> 
+
+                    <button className="btn btn-danger btn-sm" id="removeButton" onClick={this.handleClick}>Delete</button> 
                 </li>
                 
             </div>
@@ -108,19 +118,24 @@ class Form extends React.Component{
     constructor(props){
         super(props);
         this.state={
-            list: ["Raise the top-sail.", "Scrub the poopdeck.", "Empty the bilge pump."], 
+            list: [
+                {complete: 0, task: 'Raise the top-sail.'},
+                {complete: 1, task: 'Scrub the poopdeck.'},
+                {complete: 0, task: 'Empty the bilge pump.'}
+            ],
             textValue: ""
         };
         this.onButtonClick=this.onButtonClick.bind(this);
         this.onTextBoxChange=this.onTextBoxChange.bind(this);
         this.onRemoveClick=this.onRemoveClick.bind(this);
+        this.onCompleteClick=this.onCompleteClick.bind(this);
     }
     
     onButtonClick(event){
         if(this.state.textValue.length>0)
         {
             this.setState({
-                list: this.state.list.concat([this.state.textValue]),
+                list: this.state.list.concat({complete: 0, task: this.state.textValue}),
                 textValue: ""
             });
         }
@@ -132,12 +147,34 @@ class Form extends React.Component{
         });
     }
 
-    onRemoveClick(textValue){
+    onRemoveClick(textValue, listItem){
         //Remove the record from the list if it matches the id of the clicked record.
-        const updatedArr = this.state.list.filter((recordVal) => recordVal != textValue);  
+        const updatedArr = this.state.list.filter((listItem) => listItem.task != textValue);   
 
         this.setState({
             list: updatedArr
+        })
+    }
+
+    onCompleteClick(textValue){
+        //Toggle the 'complete' value for selected record.
+        this.setState({
+            list: 
+                this.state.list.map(item => {
+                    if (item.task == textValue)
+                    {
+                        if (item.complete==0){
+                            return {...item, complete: 1} 
+                        }
+                        else{
+                            return {...item, complete: 0} 
+                        }
+                        
+                    }
+                    else{
+                        return item;
+                    }
+                })
         })
     }
     
@@ -148,22 +185,21 @@ class Form extends React.Component{
                 <ul>
                     {
                         this.state.list.map((listItem, index) => (
-                        <ListRecord textValue={listItem} index={index} onRemoveClick={this.onRemoveClick} />
+                            <ListRecord textValue={listItem.task} index={index} listItem={listItem} onRemoveClick={this.onRemoveClick} 
+                            onCompleteClick={this.onCompleteClick} />
+                            )
                         )
-                    )
-                }
+                    }
                 </ul>
+
             </div>
             );
     }
 }
 ReactDOM.render(<Form />, document.getElementById("formDisplay"));
 
-
 </script>
 </div>
-
-
 </body>
 </html>
 
